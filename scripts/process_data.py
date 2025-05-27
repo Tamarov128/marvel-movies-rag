@@ -17,8 +17,10 @@ from langchain_chroma import Chroma
 # ─── Project-root-aware paths ─────────────────────────────────────────────────
 SCRIPT_DIR   = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
-RAW_DIR      = os.path.join(PROJECT_ROOT, "data", "raw", "raw_marvel_wiki")
-CHROMA_DIR   = os.path.join(PROJECT_ROOT, "data", "chroma", "chroma_marvel_wiki")
+# RAW_DIR      = os.path.join(PROJECT_ROOT, "data", "raw", "raw_marvel_wiki")
+# CHROMA_DIR   = os.path.join(PROJECT_ROOT, "data", "chroma", "chroma_marvel_wiki")
+RAW_DIR      = os.path.join(PROJECT_ROOT, "data", "raw", "raw_wikipedia")
+CHROMA_DIR   = os.path.join(PROJECT_ROOT, "data", "chroma", "chroma_wikipedia")
 
 # ─── Configuration ─────────────────────────────────────────────────────────────
 COLLECTION_NAME = "marvel_films"
