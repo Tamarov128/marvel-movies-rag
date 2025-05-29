@@ -13,8 +13,7 @@ RAW_DATA_DIR     = os.path.join(os.path.dirname(__file__), '..', 'data', 'raw', 
 MOVIES_CATEGORY  = "Released_Movies"
 REQUEST_DELAY    = 0.1  # seconds between requests
 CHARACTERS       = [
-    "Iron Man", "Captain America", "Thor", "Hulk", "Ant-Man",
-    "Spider-Man", "Star-Lord", "Doctor Strange", "Black Panther", "Daredevil"
+    "Iron Man", "Captain America", "Thor", "Hulk", "Ant-Man", "Spider-Man", "Star-Lord", "Doctor Strange", "Black Panther", "Daredevil", "Black Widow", "Hawkeye", "Vision", "Scarlet Witch", "Falcon", "Winter Soldier", "War Machine", "Captain Marvel", "Thanos"
 ]
 
 
@@ -59,7 +58,8 @@ def fetch_category_members(session: requests.Session, category: str):
 
 def fetch_page_text(session: requests.Session, title: str) -> dict:
     """
-    Fetch pageid, title, and cleaned plain-text content for a page via the parse API.
+    Fetch pageid, title, and cleaned plain-text content for a page via the parse API,
+    collapsing all newlines and extra spaces into single spaces.
     """
     params = {
         'action': 'parse',
@@ -70,15 +70,21 @@ def fetch_page_text(session: requests.Session, title: str) -> dict:
     }
     resp = session.get(API_URL, params=params)
     resp.raise_for_status()
+
     parse = resp.json().get('parse', {})
     pageid = int(parse.get('pageid', 0))
-    title = parse.get('title', title)
-    html = parse.get('text', {}).get('*', '')
-    # Convert HTML to plain text
-    text = BeautifulSoup(html, 'html.parser').get_text(separator='\n')
-    # Collapse multiple newlines into one and remove non-ASCII characters
-    text = re.sub(r'\n+', '\n', text)
-    text = re.sub(r'[^\x00-\x7F]', '', text)
+    title  = parse.get('title', title)
+    html   = parse.get('text', {}).get('*', '')
+
+    # 1) Strip HTML tags, getting all text in one big string
+    raw = BeautifulSoup(html, 'html.parser').get_text()
+
+    # 2) Remove non-ASCII
+    raw = re.sub(r'[^\x00-\x7F]', '', raw)
+
+    # 3) Collapse any run of whitespace (spaces, tabs, newlines) into a single space
+    text = re.sub(r'\s+', ' ', raw).strip()
+
     return {
         'pageid': pageid,
         'title': title,
